@@ -28,11 +28,13 @@ def extract_and_save_ips(url, output_file='ip_list.txt'):
         response.raise_for_status()
         page_content = response.text
 
+        print("Page content fetched")  # 调试信息
         soup = BeautifulSoup(page_content, 'html.parser')
         ip_table = soup.find('table')
 
-        ip_list = []
         if ip_table:
+            print("Table found")  # 调试信息
+            ip_list = []
             for row in ip_table.find_all('tr')[1:]:
                 cols = row.find_all('td')
                 if len(cols) >= 1:
@@ -40,22 +42,22 @@ def extract_and_save_ips(url, output_file='ip_list.txt'):
                     ip_list.append(f"{ip_address}:443#HK")
                     print(f"IP found: {ip_address}")
 
-        if ip_list:
-            try:
-                # 使用 GITHUB_WORKSPACE 获取项目根目录路径
-                workspace = os.getenv('GITHUB_WORKSPACE', '')
-                output_path = os.path.join(workspace, output_file)
-                with open(output_path, 'w') as f:
-                    for ip in ip_list:
-                        f.write(f"{ip}\n")
-                print(f"IP addresses saved to {output_path}")
-            except IOError as e:
-                print(f"Error writing to file {output_path}: {e}")
-        else:
-            print("No IP addresses found.")
+            if ip_list:
+                try:
+                    workspace = os.getenv('GITHUB_WORKSPACE', '')
+                    output_path = os.path.join(workspace, output_file)
+                    with open(output_path, 'a') as f:  # 使用追加模式
+                        for ip in ip_list:
+                            f.write(f"{ip}\n")
+                    print(f"IP addresses saved to {output_path}")
+                except IOError as e:
+                    print(f"Error writing to file {output_path}: {e}")
+            else:
+                print("No IP addresses found.")
 
     except requests.exceptions.RequestException as e:
         print(f"Error fetching IP addresses: {e}")
+
 
 
 
