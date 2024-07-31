@@ -45,10 +45,10 @@ def extract_and_save_ips(url, output_file='ip_list.txt'):
                 try:
                     workspace = os.getenv('GITHUB_WORKSPACE', '')
                     output_path = os.path.join(workspace, output_file)
-                    with open(output_path, 'a') as f:  # 使用追加模式
+                    with open(output_file, 'a') as f:  # 使用追加模式
                         for ip in ip_list:
                             f.write(f"{ip}\n")
-                    print(f"IP addresses saved to {output_path}")
+                    print(f"IP addresses saved to {output_file}")
                 except IOError as e:
                     print(f"Error writing to file {output_path}: {e}")
             else:
