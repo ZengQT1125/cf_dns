@@ -3,6 +3,8 @@ import traceback
 import time
 import os
 import json
+import requests
+from bs4 import BeautifulSoup
 
 # API 密钥
 CF_API_TOKEN    =   os.environ["CF_API_TOKEN"]
@@ -18,6 +20,37 @@ headers = {
     'Authorization': f'Bearer {CF_API_TOKEN}',
     'Content-Type': 'application/json'
 }
+
+def extract_and_save_ips(url, output_file='ip_list.txt'):
+    try:
+        # 发送 GET 请求获取页面内容
+        response = requests.get(url)
+        response.raise_for_status()
+        page_content = response.text
+
+        # 使用 BeautifulSoup 解析页面内容
+        soup = BeautifulSoup(page_content, 'html.parser')
+        ip_table = soup.find('table')  # 假设IP列表在一个表格中
+
+        ip_list = []
+        if ip_table:
+            # 遍历表格行并提取IP地址信息
+            for row in ip_table.find_all('tr')[1:]:  # 跳过表头行
+                cols = row.find_all('td')
+                if len(cols) >= 1:
+                    ip_address = cols[0].text.strip()
+                    ip_list.append(f"{ip_address}:443#HK")
+
+        # 将IP列表保存到文本文件中
+        with open(output_file, 'w') as f:
+            for ip in ip_list:
+                f.write(f"{ip}\n")
+
+        print(f"IP addresses saved to {output_file}")
+
+    except requests.exceptions.RequestException as e:
+        print(f"Error fetching IP addresses: {e}")
+
 
 def get_cf_speed_test_ip(timeout=10, max_retries=5):
     for attempt in range(max_retries):
@@ -83,6 +116,8 @@ def push_plus(content):
     requests.post(url, data=body, headers=headers)
 
 def main():
+    # 抓取并保存 IP 地址
+    extract_and_save_ips('https://ip.164746.xyz/')    
     # 获取最新优选IP
     ip_addresses_str = get_cf_speed_test_ip()
     ip_addresses = ip_addresses_str.split(',')
