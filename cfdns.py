@@ -11,8 +11,12 @@ CF_API_TOKEN    =   os.environ["CF_API_TOKEN"]
 CF_ZONE_ID      =   os.environ["CF_ZONE_ID"]
 CF_DNS_NAME     =   os.environ["CF_DNS_NAME"]
 
+#CF_API_TOKEN    =   "1Qu94vrjm1XZQtslS8RwF-CLH0k9B_5r9-uFQYMr"
+#CF_ZONE_ID      =   "6ac25611a42697d493622342cdb8fffb"
+#CF_DNS_NAME     =   "dns.164746.xyz"
+
 # pushplus_token
-PUSHPLUS_TOKEN  =   os.environ["PUSHPLUS_TOKEN"]
+PUSHPLUS_TOKEN  =   "1111"
 
 
 
