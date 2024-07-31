@@ -21,35 +21,52 @@ headers = {
     'Content-Type': 'application/json'
 }
 
+
 def extract_and_save_ips(url, output_file='ip_list.txt'):
     try:
-        # 发送 GET 请求获取页面内容
         response = requests.get(url)
-        response.raise_for_status()
-        page_content = response.text
+        if response.status_code == 200:
+            print("Request successful.")
+        else:
+            print(f"Request failed with status code: {response.status_code}")
+            return
 
-        # 使用 BeautifulSoup 解析页面内容
+        page_content = response.text
+        print("Page content fetched successfully.")
+        
+        # 打印页面内容的前500字符用于调试
+        print(page_content[:500])
+
         soup = BeautifulSoup(page_content, 'html.parser')
         ip_table = soup.find('table')  # 假设IP列表在一个表格中
 
-        ip_list = []
         if ip_table:
-            # 遍历表格行并提取IP地址信息
-            for row in ip_table.find_all('tr')[1:]:  # 跳过表头行
-                cols = row.find_all('td')
-                if len(cols) >= 1:
-                    ip_address = cols[0].text.strip()
-                    ip_list.append(f"{ip_address}:443#HK")
+            print("Table found.")
+        else:
+            print("Table not found.")
+            return
 
-        # 将IP列表保存到文本文件中
-        with open(output_file, 'w') as f:
-            for ip in ip_list:
-                f.write(f"{ip}\n")
+        ip_list = []
+        for row in ip_table.find_all('tr')[1:]:  # 跳过表头行
+            cols = row.find_all('td')
+            if len(cols) >= 1:
+                ip_address = cols[0].text.strip()
+                ip_list.append(f"{ip_address}:443#HK")
+                print(f"IP found: {ip_address}")
 
-        print(f"IP addresses saved to {output_file}")
+        if ip_list:
+            with open(output_file, 'w') as f:
+                for ip in ip_list:
+                    f.write(f"{ip}\n")
+            print(f"IP addresses saved to {output_file}")
+        else:
+            print("No IP addresses found.")
 
     except requests.exceptions.RequestException as e:
         print(f"Error fetching IP addresses: {e}")
+
+
+
 
 
 def get_cf_speed_test_ip(timeout=10, max_retries=5):
