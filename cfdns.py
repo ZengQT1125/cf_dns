@@ -27,7 +27,9 @@ def extract_and_save_ips(url, output_file='ip_list.txt'):
         response = requests.get(url)
         response.raise_for_status()
         page_content = response.text
-
+        
+        workspace = os.getenv('GITHUB_WORKSPACE', '')
+        print(f" {workspace}")
         soup = BeautifulSoup(page_content, 'html.parser')
         ip_table = soup.find('table')
 
