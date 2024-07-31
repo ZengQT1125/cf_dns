@@ -42,7 +42,7 @@ def extract_and_save_ips(url, output_file='ip_list.txt'):
                 cols = row.find_all('td')
                 if len(cols) >= 1:
                     ip_address = cols[0].text.strip()
-                    ip_list.append(f"{ip_address}:443#HK")
+                    ip_list.append(f"{ip_address}:443#")
                     print(f"IP found: {ip_address}")
 
             if ip_list:
