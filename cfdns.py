@@ -7,13 +7,13 @@ import requests
 from bs4 import BeautifulSoup
 
 # API 密钥
-CF_API_TOKEN    =   os.environ["CF_API_TOKEN"]
-CF_ZONE_ID      =   os.environ["CF_ZONE_ID"]
-CF_DNS_NAME     =   os.environ["CF_DNS_NAME"]
+#CF_API_TOKEN    =   os.environ["CF_API_TOKEN"]
+#CF_ZONE_ID      =   os.environ["CF_ZONE_ID"]
+#CF_DNS_NAME     =   os.environ["CF_DNS_NAME"]
 
-#CF_API_TOKEN    =   "1Qu94vrjm1XZQtslS8RwF-CLH0k9B_5r9-uFQYMr"
-#CF_ZONE_ID      =   "6ac25611a42697d493622342cdb8fffb"
-#CF_DNS_NAME     =   "dns.164746.xyz"
+CF_API_TOKEN    =   "1Qu94vrjm1XZQtslS8RwF-CLH0k9B_5r9-uFQYMr"
+CF_ZONE_ID      =   "6ac25611a42697d493622342cdb8fffb"
+CF_DNS_NAME     =   "dns.164746.xyz"
 
 # pushplus_token
 PUSHPLUS_TOKEN  =   "1111"
@@ -24,7 +24,16 @@ headers = {
     'Authorization': f'Bearer {CF_API_TOKEN}',
     'Content-Type': 'application/json'
 }
-
+def get_location(ip):
+    try:
+        # 使用 ipinfo.io API 获取IP的地理位置
+        response = requests.get(f"https://ipinfo.io/{ip}/json")
+        response.raise_for_status()
+        data = response.json()
+        return data.get('country', 'Unknown')
+    except requests.exceptions.RequestException:
+        return 'Unknown'
+    
 def extract_and_save_ips(url, output_file='ip_list.txt'):
     try:
         response = requests.get(url)
@@ -42,14 +51,15 @@ def extract_and_save_ips(url, output_file='ip_list.txt'):
                 cols = row.find_all('td')
                 if len(cols) >= 1:
                     ip_address = cols[0].text.strip()
-                    ip_list.append(f"{ip_address}:443#HK")
+                    region = get_location(ip_address)
+                    ip_list.append(f"{ip_address}#{region}")
                     print(f"IP found: {ip_address}")
 
             if ip_list:
                 try:
                     workspace = os.getenv('GITHUB_WORKSPACE', '')
                     output_path = os.path.join(workspace, output_file)
-                    with open(output_file, 'a') as f:  # 使用追加模式
+                    with open(output_file, 'w') as f:  # 使用追加模式
                         for ip in ip_list:
                             f.write(f"{ip}\n")
                     print(f"IP addresses saved to {output_file}")
