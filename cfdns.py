@@ -22,7 +22,7 @@ headers = {
 }
 
 
-def extract_and_save_ips(url, output_file='ip_list.txt'):
+def extract_and_save_ips(url, output_file='${{ github.workspace }}/ip_list.txt'):
     try:
         response = requests.get(url)
         response.raise_for_status()
@@ -121,13 +121,6 @@ def push_plus(content):
 def main():
     # 抓取并保存 IP 地址
     extract_and_save_ips('https://ip.164746.xyz/')   
-
-    # 设置文件路径和名称
-    file_path = 'ip_list.txt'
-    
-    # 打开文件进行写入
-    with open(file_path, 'w') as file:
-    file.write('Hello, GitHub!')
     
     # 文件已自动关闭
     # 获取最新优选IP
