@@ -22,7 +22,7 @@ headers = {
 }
 
 
-def extract_and_save_ips(url, output_file='${{ github.workspace }}/ip_list.txt'):
+def extract_and_save_ips(url, output_file='ip_list.txt'):
     try:
         response = requests.get(url)
         response.raise_for_status()
